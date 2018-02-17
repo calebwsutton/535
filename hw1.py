@@ -1,10 +1,14 @@
 # CSC 535 Homework 1 Part 1
+# Authors: Caleb Sutton, Lyubov Sidlinskaya, Josiah McGurty
 
 import pandas as pd
 import numpy as np
 import copy
+import sys
+import csv
 
-training_data = [
+
+training_data_input = [
 ({'level':'Senior', 'lang':'Java', 'tweets':'no', 'phd':'no'}, False),
 ({'level':'Senior', 'lang':'Java', 'tweets':'no', 'phd':'yes'}, False),
 ({'level':'Mid', 'lang':'Python', 'tweets':'no', 'phd':'no'}, True),
@@ -21,7 +25,7 @@ training_data = [
 ({'level':'Junior', 'lang':'Python', 'tweets':'no', 'phd':'yes'}, False)
 ] 
 
-def main():
+def read_data(training_data):
 	training_data_new = []
 	attributes = {}
 
@@ -42,6 +46,7 @@ def main():
 		attributes[key] = values
 
 	print(build_tree(training_data_frame, attributes))
+	
 
 def build_tree(training_data_frame, attributes):
 	all_true = True
@@ -150,7 +155,38 @@ def calc_entropy(training_data_frame, attribute):
 
 	return gain
 
+# Function which accepts an input data file and parses it into an
+# acceptable format for the read_data() function.
+def read_file_data(input_file_name):
+
+	# File is read using pandas, header line included.
+    input_data = pd.read_csv(input_file_name, header=0)	
+    # Creates list with each line of file placed into a dictionary.
+    data_list = list(input_data.T.to_dict().values())
+    # Empty list for our final formatted data
+    final_dict_list = []
+    # For each dictionary row
+    for data_row in data_list:
+    	# Holds the last key in dictionary
+    	last_key = list(data_row.keys())[-1]
+    	# Holds the last value in dictionary
+    	last_value = list(data_row.values())[-1]
+    	# Removes the last 'key': value set from dictionary
+    	data_row.pop(last_key)
+    	# Creates a new tuple with dictionary, last value
+    	new_tuple = (data_row, last_value)
+    	# Appends new tuple to final List to fit the training data format
+    	final_dict_list.append(new_tuple)
+    # Sends newly constructed list to read_data () method
+    read_data(final_dict_list)
+
+	
 def classify(sample):
 	return True
 
-main()
+
+if len(sys.argv) > 1:
+    input_file_name = sys.argv[1]
+    read_file_data(input_file_name)
+else:
+    read_data(training_data_input)
