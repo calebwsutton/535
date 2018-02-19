@@ -5,20 +5,20 @@ import numpy as np
 import copy
 
 training_data = [
-({'level':'Senior', 'lang':'Java', 'tweets':'no', 'phd':'no'}, False),
-({'level':'Senior', 'lang':'Java', 'tweets':'no', 'phd':'yes'}, False),
-({'level':'Mid', 'lang':'Python', 'tweets':'no', 'phd':'no'}, True),
-({'level':'Junior', 'lang':'Python', 'tweets':'no', 'phd':'no'}, True),
-({'level':'Junior', 'lang':'R', 'tweets':'yes', 'phd':'no'}, True),
-({'level':'Junior', 'lang':'R', 'tweets':'yes', 'phd':'yes'}, False),
-({'level':'Mid', 'lang':'R', 'tweets':'yes', 'phd':'yes'}, True),
-({'level':'Senior', 'lang':'Python', 'tweets':'no', 'phd':'no'}, False),
-({'level':'Senior', 'lang':'R', 'tweets':'yes', 'phd':'no'}, True),
-({'level':'Junior', 'lang':'Python', 'tweets':'yes', 'phd':'no'}, True),
-({'level':'Senior', 'lang':'Python', 'tweets':'yes', 'phd':'yes'}, True),
-({'level':'Mid', 'lang':'Python', 'tweets':'no', 'phd':'yes'}, True),
-({'level':'Mid', 'lang':'Java', 'tweets':'yes', 'phd':'no'}, True),
-({'level':'Junior', 'lang':'Python', 'tweets':'no', 'phd':'yes'}, False)
+	({'level':'Senior', 'lang':'Java', 'tweets':'no', 'phd':'no'}, False),
+	({'level':'Senior', 'lang':'Java', 'tweets':'no', 'phd':'yes'}, False),
+	({'level':'Mid', 'lang':'Python', 'tweets':'no', 'phd':'no'}, True),
+	({'level':'Junior', 'lang':'Python', 'tweets':'no', 'phd':'no'}, True),
+	({'level':'Junior', 'lang':'R', 'tweets':'yes', 'phd':'no'}, True),
+	({'level':'Junior', 'lang':'R', 'tweets':'yes', 'phd':'yes'}, False),
+	({'level':'Mid', 'lang':'R', 'tweets':'yes', 'phd':'yes'}, True),
+	({'level':'Senior', 'lang':'Python', 'tweets':'no', 'phd':'no'}, False),
+	({'level':'Senior', 'lang':'R', 'tweets':'yes', 'phd':'no'}, True),
+	({'level':'Junior', 'lang':'Python', 'tweets':'yes', 'phd':'no'}, True),
+	({'level':'Senior', 'lang':'Python', 'tweets':'yes', 'phd':'yes'}, True),
+	({'level':'Mid', 'lang':'Python', 'tweets':'no', 'phd':'yes'}, True),
+	({'level':'Mid', 'lang':'Java', 'tweets':'yes', 'phd':'no'}, True),
+	({'level':'Junior', 'lang':'Python', 'tweets':'no', 'phd':'yes'}, False)
 ] 
 
 def main():
@@ -30,7 +30,7 @@ def main():
 
 	for record in training_data:
 		new_record = record[0]
-		new_record['hire'] = record[1]
+		new_record['class'] = record[1]
 		training_data_new.append(new_record)
 
 	training_data_frame = pd.DataFrame(training_data_new)
@@ -44,55 +44,47 @@ def main():
 	print(build_tree(training_data_frame, attributes))
 
 def build_tree(training_data_frame, attributes):
-	all_true = True
-	all_false = True
+	num_true = 0
+	num_false = 0
 	entropies = {}
 	tree = ()
 
 
-	#Check to see if all the reocrd have the same class
-	#If they do, then return that class
-	for value in training_data_frame['hire']:
-		if value == True:
-			all_false = False
-		else:
-			all_true = False
-	if all_false == True:
+	# count number of values in each class
+	for value in training_data_frame['class']:
+		if value == true:
+			num_true += 1
+		else 
+			num_false +=1
+
+	# if all values of class are true or false return that value
+	if num_true == 0:
 		return False
-	elif all_true == True:
+	else if num_false == 0:
 		return True
-	
 
-	#Check to see if there is an attribute left to split on,
-	#if not return the most common class
+	# if there are no attributes left return the most common class
 	if len(attributes) == 0:
-		num_true = 0
-		num_false = 0
-
-		for value in training_data_frame['hire']:
-			if value == True:
-				num_true += 1
-			else:
-				num_false +=1
-
-		if num_true > num_false:
+		if num_false > num_true:
+			return False
+		else: 
 			return True
 
-		return False
-
-	#if there is only on attribute left	
 	sub_tree = {}
-	if len(attributes) == 1:
+
+	# #if there is only on attribute left	
+	# if len(attributes) == 1:
 		
-		#Split on the last attribute
-		for key, values in attributes.items():
-			attributes.popitem()
-			for value in values:
-				sub_tree[value] = build_tree(copy.deepcopy(training_data_frame.loc[training_data_frame[key] == value]), copy.deepcopy(attributes))
+	# 	#Split on the last attribute
+	# 	for key, values in attributes.items():
+	# 		attributes.popitem()
+	# 		for value in values:
+	# 			sub_tree[value] = build_tree(copy.deepcopy(training_data_frame.loc[training_data_frame[key] == value]), copy.deepcopy(attributes))
 				
-			tree = (key, sub_tree)
-		#print(tree)	
-		return tree
+	# 		tree = (key, sub_tree)
+	# 	#print(tree)
+	# 	# add None/Default value to end of subtree	
+	# 	return tree
 
 
 	#If there is more than 1 attribute left calculate the entropy for each attribute 
@@ -112,6 +104,13 @@ def build_tree(training_data_frame, attributes):
 	for value in attribute_values:
 		sub_tree[value] = build_tree(copy.deepcopy(training_data_frame.loc[training_data_frame[highest_attribute] == value]), copy.deepcopy(attributes))
 	
+	# add default to end of subtree 
+	if num_true > num_false:
+		sub_tree['default'] = True
+	else:
+		sub_tree['default'] = False
+
+
 	tree = (highest_attribute, sub_tree)
 	return tree
 
@@ -132,11 +131,12 @@ def calc_entropy(training_data_frame, attribute):
 
 	for key, values in attribute.items():
 		for value in values:
+			# num_records is the number of 
 			num_records = len(training_data_frame.loc[training_data_frame[key] == value])
 			if num_records < 0.0000000000001:
 				continue
-			num_true = len(training_data_frame.loc[(training_data_frame['hire'] == True) & (training_data_frame[key] == value)])
-			num_false = len(training_data_frame.loc[(training_data_frame['hire'] == False) & (training_data_frame[key] == value)])
+			num_true = len(training_data_frame.loc[(training_data_frame['class'] == True) & (training_data_frame[key] == value)])
+			num_false = len(training_data_frame.loc[(training_data_frame['class'] == False) & (training_data_frame[key] == value)])
 			prob_false = float(num_false/num_records)
 			prob_true = float(num_true/num_records)
 
