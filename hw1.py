@@ -1,5 +1,6 @@
 # CSC 535 Homework 1 Part 1
 # Authors: Caleb Sutton, Lyubov Sidlinskaya, Josiah McGurty
+# Trace Location: \\trace\Class\CSC-535-635\001\Sutton728
 
 import pandas as pd
 import numpy as np
