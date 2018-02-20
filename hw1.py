@@ -50,8 +50,9 @@ def read_data(training_data):
 
 	final_dt = (build_tree(training_data_frame, attributes))
 	print (final_dt)
-	classify_input = classify(final_dt, test_sample1)
-	# classify(final_dt, test_sample2)
+	print ("\n")
+	print(classify(final_dt, test_sample1))
+	print (classify(final_dt, test_sample2))
 	# print (classify_input)
 
 def build_tree(training_data_frame, attributes):
@@ -168,7 +169,19 @@ def read_file_data(input_file_name):
     read_data(final_dict_list)
 
 def classify(dt, sample):
-	return True
+	print (sample)
+	first_level = dt[0]
+	second_level =  dt[1]
+	for key, value in sample.items():
+		if key == first_level:
+			value_tuple = second_level.get(value)
+			next_attribute = value_tuple[0]
+			for key, value in sample.items():
+				if key == next_attribute:
+					next_values = value_tuple[1]
+					final_value = next_values.get(value)	
+					return (final_value)
+					
 
 if len(sys.argv) > 1:
     input_file_name = sys.argv[1]
