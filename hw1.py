@@ -24,9 +24,12 @@ training_data_input = [
 	({'level':'Junior', 'lang':'Python', 'tweets':'no', 'phd':'yes'}, False)
 ] 
 
-test_sample1 = {"level" : "Junior","lang" : "Java","tweets" : "yes","phd" : "no"}
-test_sample2 = {"level" : "Junior","lang" : "Java","tweets" : "yes","phd" : "yes"} 
+test_sample1 = {"level" : "Junior","lang" : "Java","tweets" : "yes","phd" : "no"} #True
+test_sample2 = {"level" : "Junior","lang" : "Java","tweets" : "yes","phd" : "yes"} #False
+test_sample3 = {"level" : "Intern"} # True
+test_sample4 = {"level" : "Senior"} # False 
 
+# test_sample5 = {"level" : "Mid"} # True
 
 def read_data(training_data):
 	training_data_new = []
@@ -53,7 +56,9 @@ def read_data(training_data):
 	print ("\n")
 	print(classify(final_dt, test_sample1))
 	print (classify(final_dt, test_sample2))
-	# print (classify_input)
+	print (classify(final_dt, test_sample3))
+	print (classify(final_dt, test_sample4))
+	# print (classify(final_dt, test_sample5))
 
 def build_tree(training_data_frame, attributes):
 	num_true = 0
@@ -169,18 +174,29 @@ def read_file_data(input_file_name):
     read_data(final_dict_list)
 
 def classify(dt, sample):
+	print ("\n")
 	print (sample)
-	first_level = dt[0]
-	second_level =  dt[1]
-	for key, value in sample.items():
-		if key == first_level:
-			value_tuple = second_level.get(value)
-			next_attribute = value_tuple[0]
-			for key, value in sample.items():
-				if key == next_attribute:
-					next_values = value_tuple[1]
-					final_value = next_values.get(value)	
-					return (final_value)
+	main_attribute= dt[0]		# Main Attributute with highest information gain
+	value_branch =  dt[1]		# Following list of values for main attribute above
+
+	# For each "attribute : value: pair in test sample 
+	for key, value in sample.items(): 					# "level : Senior"
+		if key == main_attribute:						# If current attribute in pair == the main attribute
+
+			if value in value_branch.keys():			# If value of "attribute : value: pair is valid, continue
+				value_tuple = value_branch.get(value)	# Get get the tuple(attribute, {..} ) for next node in DT
+				
+				next_attribute = value_tuple[0]			# Next_attribute is the following attribute to check going down the DT
+
+				for key, value in sample.items():			# For all "attribute : value: pair in test sample 
+					if key == next_attribute:				# Find the attribute that is next in the DT
+						next_values = value_tuple[1]		# Following dict {..} for attribute above
+						return_value = next_values.get(value)	# Gets the value of the attribute
+						return (return_value)
+
+			else:										# If value is not valid: return value of None attribute
+				return value_branch["None"]
+
 					
 
 if len(sys.argv) > 1:
