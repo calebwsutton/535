@@ -28,8 +28,7 @@ test_sample1 = {"level" : "Junior","lang" : "Java","tweets" : "yes","phd" : "no"
 test_sample2 = {"level" : "Junior","lang" : "Java","tweets" : "yes","phd" : "yes"} #False
 test_sample3 = {"level" : "Intern"} # True
 test_sample4 = {"level" : "Senior"} # False 
-
-# test_sample5 = {"level" : "Mid"} # True
+test_sample5 = {"level" : "Mid"} # True
 
 def read_data(training_data):
 	training_data_new = []
@@ -54,11 +53,20 @@ def read_data(training_data):
 	final_dt = (build_tree(training_data_frame, attributes))
 	print (final_dt)
 	print ("\n")
+	print(test_sample1)
 	print(classify(final_dt, test_sample1))
+	print ("\n")
+	print(test_sample2)
 	print (classify(final_dt, test_sample2))
+	print ("\n")
+	print(test_sample3)
 	print (classify(final_dt, test_sample3))
+	print ("\n")
+	print(test_sample4)
 	print (classify(final_dt, test_sample4))
-	# print (classify(final_dt, test_sample5))
+	print ("\n")
+	print(test_sample5)
+	print (classify(final_dt, test_sample5))
 
 def build_tree(training_data_frame, attributes):
 	num_true = 0
@@ -130,7 +138,6 @@ def calc_entropy(training_data_frame, attribute):
 
 	for key, values in attribute.items():
 		for value in values:
-			# num_records is the number of 
 			num_records = len(training_data_frame.loc[training_data_frame[key] == value])
 			if num_records < 0.0000000000001:
 				continue
@@ -173,31 +180,20 @@ def read_file_data(input_file_name):
     # Sends newly constructed list to read_data () method
     read_data(final_dict_list)
 
+
 def classify(dt, sample):
-	print ("\n")
-	print (sample)
-	main_attribute= dt[0]		# Main Attributute with highest information gain
-	value_branch =  dt[1]		# Following list of values for main attribute above
 
-	# For each "attribute : value: pair in test sample 
-	for key, value in sample.items(): 					# "level : Senior"
-		if key == main_attribute:						# If current attribute in pair == the main attribute
+	for sample_attribute, sample_attribute_value in sample.items():
+		if sample_attribute == dt[0]:
+			for tree_attribute_value, sub_tree in dt[1].items():
+				if tree_attribute_value ==  sample_attribute_value:
+					if type(sub_tree) == type(True):
+						return sub_tree
+					else:
+						sample.pop(sample_attribute)
+						return classify(dt[1][sample_attribute_value], sample)
 
-			if value in value_branch.keys():			# If value of "attribute : value: pair is valid, continue
-				value_tuple = value_branch.get(value)	# Get get the tuple(attribute, {..} ) for next node in DT
-				
-				next_attribute = value_tuple[0]			# Next_attribute is the following attribute to check going down the DT
-
-				for key, value in sample.items():			# For all "attribute : value: pair in test sample 
-					if key == next_attribute:				# Find the attribute that is next in the DT
-						next_values = value_tuple[1]		# Following dict {..} for attribute above
-						return_value = next_values.get(value)	# Gets the value of the attribute
-						return (return_value)
-
-			else:										# If value is not valid: return value of None attribute
-				return value_branch["None"]
-
-					
+	return dt[1]['None']		
 
 if len(sys.argv) > 1:
     input_file_name = sys.argv[1]
