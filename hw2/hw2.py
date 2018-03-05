@@ -84,7 +84,7 @@ def classifySample(trainingData, testSample, k):
      if int(computedClass) == int(testSample[0]):
           return True
      else:
-          print(nearestSamples)
+          #print(nearestSamples)
           return False
 
 
