@@ -6,7 +6,7 @@ import multiprocessing as mp
 
 def main():
      if (len(sys.argv) != 4):
-          print("\nUsage: python hw2.py <trainingDataFile> <testDataFile> <k>\n")
+          print("\nUsage: python hw2_parallel.py <trainingDataFile> <testDataFile> <k>\n")
           exit()
 
      startTime = time.time()
@@ -83,9 +83,7 @@ def classifySamples(trainingData, testSamples, k, que):
                result['distance'] = calculateDistance(testSample[1:], trainingSample[1:])
                result['vote'] = 1/result['distance']
 
-               if len(nearestSamples) < 1:
-                    nearestSamples.append(result)
-               elif len(nearestSamples) <= k:
+               if len(nearestSamples) < k:
                     nearestSamples.append(result)
                     nearestSamples.sort(key = lambda sample: sample['distance'], reverse = False)
                else:
@@ -97,16 +95,12 @@ def classifySamples(trainingData, testSamples, k, que):
                               break
                          i += 1
 
-               #print('class = ' + str(trainingSample[0]) + ', distance = ' + str(distance))
-               #print(nearestSamples)
-
           computedClass = calculateClass(nearestSamples)
           print('Desired Class: ' + str(testSample[0]) + ', Computed Class: ' + str(computedClass))
 
           if int(computedClass) == int(testSample[0]):
                que.put(True)
           else:
-               #print(nearestSamples)
                que.put(False)
 
 
