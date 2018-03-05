@@ -1,11 +1,14 @@
 import sys
 import csv
 import math
+import time
 
 def main():
      if (len(sys.argv) != 4):
           print("\nUsage: python hw2.py <trainingDataFile> <testDataFile> <k>\n")
           exit()
+
+     startTime = time.time()
 
      trainingData = []
      testData = []
@@ -27,11 +30,14 @@ def main():
                numIncorrect += 1
 
      accuracyRate = numCorrect / (numCorrect + numIncorrect)
+     round(accuracyRate, 4)
 
      print('\nAccuracy Rate: ' + str(accuracyRate * 100) + '%')
      print('Number of misclassified test samples: ' + str(numIncorrect))
      print('Total number of test samples: ' + str(numCorrect + numIncorrect) + '\n')
 
+     endTime = time.time()
+     print('Time Elapsed: ' + str(round((endTime-startTime), 3)) + 's\n')
 
 def readCSV(filepath):
      data = []
