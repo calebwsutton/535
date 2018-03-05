@@ -79,10 +79,12 @@ def classifySample(trainingData, testSample, k):
 
      computedClass = calculateClass(nearestSamples)
      print('Desired Class: ' + str(testSample[0]) + ', Computed Class: ' + str(computedClass))
+     
 
      if int(computedClass) == int(testSample[0]):
           return True
      else:
+          print(nearestSamples)
           return False
 
 
@@ -105,6 +107,7 @@ def calculateClass(nearestSamples):
 
      for i in range(len(votes)):
           if votes[i] > highestValue:
+               highestValue = votes[i]
                highest = i
      
      return highest
